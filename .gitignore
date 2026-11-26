@@ -1,0 +1,8 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# 이 저장소에 넣지 않는 것
+/build/                                  # APK와 Android 내보내기 템플릿
+/Godot_v4.7.2-stable_win64.exe (1)/      # 엔진 실행 파일
+/server/                                 # 온라인 대전 중계 서버 (비공개 저장소 boardgamemania-relay)
