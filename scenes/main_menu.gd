@@ -84,6 +84,8 @@ func _make_card(g: Dictionary) -> Control:
 
 	var panel := PanelContainer.new()
 	panel.add_theme_stylebox_override("panel", UIKit.panel_style(Color.WHITE, 36, 22))
+	# 카드 위에서 시작한 손가락 밀기도 목록이 받게 (PanelContainer는 기본으로 터치를 붙잡음)
+	panel.mouse_filter = Control.MOUSE_FILTER_PASS
 
 	var hb := HBoxContainer.new()
 	hb.add_theme_constant_override("separation", 18)
