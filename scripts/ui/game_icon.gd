@@ -58,6 +58,8 @@ func _draw() -> void:
 			pass
 		"draw":
 			_draw_paper(r)
+		"grow":
+			_draw_arena(r)
 
 
 # ── 움직이는 조각 ──────────────────────────────────────
@@ -133,6 +135,13 @@ func _build() -> void:
 			_part(o + Vector2(c * 0.86, c * 0.72), func(n: Node2D) -> void:
 				n.draw_line(Vector2.ZERO, Vector2(c * 0.22, -c * 0.32), Color("#FFC93C"), c * 0.1, true)
 				n.draw_line(Vector2.ZERO, Vector2(c * 0.05, -c * 0.07), Color("#3D3450"), c * 0.1, true))
+		"grow":
+			# 뒤의 검은 적 둘 → 앞의 흰 영웅 (조각 자리 = 발끝, 그래서 기울이면 발끝을 축으로 흔들림)
+			for at: Vector2 in [Vector2(0.14, 0.6), Vector2(0.86, 0.64)]:
+				_part(o + at * c, func(n: Node2D) -> void:
+					_draw_person(n, c * 0.42, Color("#161616"), Color.WHITE, at.x > 0.5))
+			_part(o + Vector2(0.5, 0.86) * c, func(n: Node2D) -> void:
+				_draw_person(n, c * 0.52, Color("#FAFAFA"), Color("#161616"), false))
 
 
 func _animate() -> void:
@@ -184,6 +193,10 @@ func _animate() -> void:
 			if k != _doodle_k:
 				_doodle_k = k
 				_parts[0].queue_redraw()
+		"grow":
+			_parts[0].rotation = sin(_t * 3.0) * 0.07
+			_parts[1].rotation = -sin(_t * 3.0 + 1.2) * 0.07
+			_parts[2].position.y = o.y + c * 0.86 - bob * c * 0.04
 
 
 func _draw_wall(r: Rect2) -> void:
@@ -300,6 +313,35 @@ func _draw_joker(n: Node2D) -> void:
 	n.draw_circle(Vector2(-tw * 0.11, -th * 0.09), tw * 0.045, Color("#3D3450"), true, -1.0, true)
 	n.draw_circle(Vector2(tw * 0.11, -th * 0.09), tw * 0.045, Color("#3D3450"), true, -1.0, true)
 	n.draw_arc(Vector2(0, -th * 0.04), tw * 0.15, 0.3, PI - 0.3, 10, Color("#3D3450"), 2.0, true)
+
+
+## 영웅키우기: 둥근 격투장 바닥 (비스듬히 내려다본 원)
+func _draw_arena(r: Rect2) -> void:
+	var c := r.size.x
+	draw_set_transform(r.position + Vector2(c * 0.5, c * 0.74), 0.0, Vector2(1.0, 0.42))
+	draw_circle(Vector2(0, c * 0.08), c * 0.6, Color(0, 0, 0, 0.18), true, -1.0, true)
+	draw_circle(Vector2.ZERO, c * 0.6, Color("#161616"), true, -1.0, true)
+	draw_circle(Vector2.ZERO, c * 0.56, Color("#EDEDED"), true, -1.0, true)
+	draw_set_transform(Vector2.ZERO)
+
+
+## 얼굴 없는 사람 하나 (발끝이 원점, 키 h). 선 색으로 한 겹 크게 그린 뒤 몸 색으로 덮어 윤곽선을 만듦.
+## fist = true 면 앞으로 내민 주먹 (왼쪽으로)
+func _draw_person(n: CanvasItem, h: float, body: Color, line: Color, fist: bool) -> void:
+	var o := maxf(1.5, h * 0.06)
+	var limb := h * 0.12
+	for pass_i in 2:
+		var col := line if pass_i == 0 else body
+		var g := o if pass_i == 0 else 0.0
+		for s: float in [-1.0, 1.0]:
+			UIKit.draw_rbox(n, Rect2(Vector2(s * h * 0.075 - limb / 2.0, -h * 0.36), Vector2(limb, h * 0.36)).grow(g), col, limb / 2.0 + g)
+		var arm_l := Rect2(Vector2(-h * 0.21 - limb / 2.0, -h * 0.66), Vector2(limb, h * 0.32))
+		if fist:
+			arm_l = Rect2(Vector2(-h * 0.5, -h * 0.6), Vector2(h * 0.34, limb))
+		UIKit.draw_rbox(n, arm_l.grow(g), col, limb / 2.0 + g)
+		UIKit.draw_rbox(n, Rect2(Vector2(h * 0.21 - limb / 2.0, -h * 0.66), Vector2(limb, h * 0.32)).grow(g), col, limb / 2.0 + g)
+		UIKit.draw_rbox(n, Rect2(Vector2(-h * 0.15, -h * 0.72), Vector2(h * 0.3, h * 0.42)).grow(g), col, h * 0.12 + g)
+		n.draw_circle(Vector2(0, -h * 0.86), h * 0.15 + g, col, true, -1.0, true)
 
 
 func _draw_paper(r: Rect2) -> void:

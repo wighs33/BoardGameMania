@@ -117,6 +117,9 @@ func _make_card(g: Dictionary) -> Control:
 		var wins := Global.get_stat(g["id"], "wins")
 		if wins > 0:
 			tags.add_child(UIKit.make_chip("승리 %d" % wins, UIKit.GOLD.darkened(0.1), 19))
+		var best := Global.get_stat(g["id"], "best")
+		if best > 0:
+			tags.add_child(UIKit.make_chip("최고 %d" % best, UIKit.GOLD.darkened(0.1), 19))
 	info.add_child(tags)
 
 	if is_available:

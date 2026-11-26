@@ -10,6 +10,16 @@ const HOME_SCENE := "res://scenes/main_menu.tscn"
 ## 새 게임을 추가하려면 여기에 항목을 하나 더 넣고 available 을 true 로!
 var games: Array[Dictionary] = [
 	{
+		"id": "herogrow",
+		"title": "영웅키우기",
+		"desc": "솟아오르는 검은 적을\n활로 막아 내요!",
+		"tags": ["1인", "액션"],
+		"scene": "res://games/herogrow/grow_game.tscn",
+		"color": Color("#F05D5E"),
+		"icon": "grow",
+		"available": true,
+	},
+	{
 		"id": "herochess",
 		"title": "히어로 체스",
 		"desc": "능력이 다른 영웅 10명으로\n상대 성을 무너뜨려요!",
@@ -169,6 +179,12 @@ func get_stat(game_id: String, key: String) -> int:
 
 func add_stat(game_id: String, key: String, amount: int = 1) -> void:
 	_cfg.set_value("stats_" + game_id, key, get_stat(game_id, key) + amount)
+	_cfg.save(SAVE_PATH)
+
+
+## 더하지 않고 값을 그대로 적음 (최고 기록 등)
+func set_stat(game_id: String, key: String, value: int) -> void:
+	_cfg.set_value("stats_" + game_id, key, value)
 	_cfg.save(SAVE_PATH)
 
 
